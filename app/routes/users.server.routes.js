@@ -9,6 +9,7 @@ module.exports = function (app) {
         failureFlash: true
     }));
     app.get('/oauth/facebook', passport.authenticate('facebook', {
+        //scope: ['email', 'name', 'id'],
         failureRedirect: '/signin'
     }));
     app.get('/oauth/facebook/callback', passport.authenticate('facebook', {
