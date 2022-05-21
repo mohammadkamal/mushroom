@@ -1,5 +1,6 @@
 var User = require('mongoose').model('User'),
-    passport = require('passport');
+    passport = require('passport'),
+    jwt = require('jsonwebtoken');
 
 var getErrorMessage = function (err) {
     var message = '';
@@ -44,6 +45,33 @@ exports.renderSignup = function (req, res, next) {
     }
 };
 
+exports.signupApi = function (req, res, next) {
+    if (!req.user) {
+        var user = new User(req.body);
+
+        user.provider = 'local';
+
+        var token = jwt.sign();
+
+        user.token = token;
+
+        user.save(function (err) {
+            if (err) {
+                return res.status(400).send({
+                    message: getErrorMessage(err)
+                });
+            }
+            req.login(user, function (err) {
+                return res.json(user);
+            });
+        });
+    } else {
+        return res.status(400).send({
+            message: getErrorMessage(err)
+        });
+    }
+};
+
 exports.signup = function (req, res, next) {
     if (!req.user) {
         var user = new User(req.body);
@@ -53,7 +81,7 @@ exports.signup = function (req, res, next) {
 
         user.save(function (err) {
             if (err) {
-                var message = getErrorMessage(err);
+                message = getErrorMessage(err);
 
                 req.flash('error', message);
                 return res.redirect('/signup');

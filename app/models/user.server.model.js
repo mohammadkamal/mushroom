@@ -23,6 +23,8 @@ var UserSchema = new Schema({
         type: Date,
         default: Date.now
     },
+    token: { type: String },
+    tokenExpiration: { type: Date }
 });
 
 UserSchema.virtual('fullName').get(
@@ -37,7 +39,6 @@ UserSchema.virtual('fullName').get(
 
 UserSchema.pre('save', function (next) {
     if (this.password) {
-        //this.salt = new Buffer(crypto.randomBytes(16).toString('base64'), 'base64');
         this.salt = new Buffer.from(crypto.randomBytes(16).toString('base64'), 'base64');
         this.password = this.hashPassword(this.password);
     }
